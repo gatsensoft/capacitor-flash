@@ -1,0 +1,6 @@
+{
+	"appId": "com.capacitor.flash",
+	"appName": "capacitor-flash",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
