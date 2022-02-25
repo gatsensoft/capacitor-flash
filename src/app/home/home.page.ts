@@ -16,30 +16,40 @@ export class HomePage implements OnInit {
 
   constructor(private platform: Platform) {}
 
-  ngOnInit() {
-    this.platform.ready().then(() => {
-      CapacitorFlash.isAvailable().then(async (result) => {
+  async ngOnInit() {
+    await this.platform.ready().then(async () => {
+      await CapacitorFlash.isAvailable().then(async (available) => {
         // auto switch on if available
-        if(result.value) {
-          await CapacitorFlash.switchOn({ intensity: 0.45 }).then(async () => {
-            const { value } = await CapacitorFlash.isSwitchedOn();
-            this.lightOn = value;
+        if(available.value) {
+          
+          // This doesn't work, lightOn is always false
+          // await CapacitorFlash.switchOn({ intensity: 1 }).then(async () => {
+          //   await CapacitorFlash.isSwitchedOn().then((result) => {
+          //     this.lightOn = result.value;
+          //   });
+          // });
+
+          // This works well, lightOn is set to true
+          await CapacitorFlash.toggle().then(async () => {
+            await CapacitorFlash.isSwitchedOn().then((result) => {
+              this.lightOn = result.value;
+            });
           });
+
         } else {
+
           await Toast.show({ text: 'Flashlight not available!' });
+
         }
       })
     });
   }
 
-  toggleLight() {
-    CapacitorFlash.isSwitchedOn().then(async (result) => {
-      if(result.value) {
-        await CapacitorFlash.switchOff();
-      } else {
-        await CapacitorFlash.switchOn({ intensity: 1 });
-      }
-      this.lightOn = !result.value;
+  async toggleLight() {
+    await CapacitorFlash.toggle().then(async () => {
+      await CapacitorFlash.isSwitchedOn().then((result) => {
+        this.lightOn = result.value;
+      });
     });
   }
 
